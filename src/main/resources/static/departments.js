@@ -65,7 +65,14 @@ var app = new Vue({
             return this.selectedItemIndex >= 0 && this.departments.length > 0;
         },
         possibleParents: function () {
-            return this.departments.filter(d => d.id !== this.editor.id);
+            // предотвращаем создание циклических графов
+            var childrenIds = [];
+            this.departments.forEach(d => {
+                if (d.parent && (d.parent.id === this.editor.id || childrenIds.includes(d.parent.id))) {
+                    childrenIds.push(d.id);
+                }
+            });
+            return this.departments.filter(d => d.id != this.editor.id && !childrenIds.includes(d.id));
         }
     },
     created: function () {
