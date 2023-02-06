@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Ай Ти Пром Справочники</title>
+  <style type="text/css">
+        .selected {
+            background-color: #cce6ff;
+        }
+    </style>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3"></script>
+</head>
+<body>
+<div id="app">
+  <div>
+    <table v-if="items.length > 0">
+      <thead>
+      <tr>
+        <th>ФИО</th><th>Профессия</th><th>Отдел</th><th>Примечание</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="item in items"
+          style="cursor: pointer"
+          v-bind:class="{selected: item.selected}"
+          v-on:click="selectItem">
+        <td>{{item.fullName}}</td>
+        <td>{{item.profession ? item.profession.name : '(пусто)'}}</td>
+        <td>{{item.department ? item.department.name : '(пусто)'}}</td>
+        <td><i>{{item.note}}</i></td>
+      </tr>
+      </tbody>
+    </table>
+    <div v-else>
+      <span>(Пусто)</span>
+    </div>
+    <button v-on:click="openCreator">Добавить элемент</button>
+    <button v-on:click="openEditor" v-if="selectedItemExists">Редактировать</button>
+    <button v-on:click="deleteItem" v-if="selectedItemExists">Удалить</button>
+    <div v-if="editor">
+      <div>
+        <label for="edit-item-full-name">ФИО:</label>
+        <input id="edit-item-full-name" type="text" v-model="editor.fullName">
+      </div>
+      <div>
+        <label for="edit-item-profession">Профессия:</label>
+        <select id="edit-item-profession" v-model="editor.profession">
+          <option v-for="profession in professions" v-bind:value="profession">
+            {{profession.name}}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="edit-item-department">Отдел:</label>
+        <select id="edit-item-department" v-model="editor.department">
+          <option v-for="department in departments" v-bind:value="department">
+            {{department.name}}
+          </option>
+        </select>
+      </div>
+      <div>
+        <label for="edit-item-note">Примечание:</label>
+        <input id="edit-item-note" type="text" v-model="editor.note">
+      </div>
+      <button v-if="editor.status === 'create'" v-on:click="createItem">Создать</button>
+      <button v-if="editor.status === 'update'" v-on:click="updateItem">Сохранить</button>
+      <button v-on:click="closeEditor">Отмена</button>
+    </div>
+  </div>
+</div>
+<script src="employees.js"></script>
+</body>
+</html>

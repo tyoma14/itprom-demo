@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ай Ти Пром Справочники</title>
+    <style type="text/css">
+        .selected {
+            background-color: #cce6ff;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.3"></script>
+</head>
+<body>
+<div id="app">
+  <div>
+    <table v-if="departments.length > 0">
+      <thead>
+      <tr>
+        <th>Наименование</th><th>Примечание</th><th>Родительский отдел</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-for="department in departments"
+          style="cursor: pointer"
+          v-bind:class="{selected: department.selected}"
+          v-on:click="selectItem">
+        <td>{{department.name}}</td>
+        <td><i>{{department.note}}</i></td>
+        <td>{{department.parent ? department.parent.name : '(пусто)'}}</td>
+      </tr>
+      </tbody>
+    </table>
+    <div v-else>
+      <span>(Пусто)</span>
+    </div>
+    <button v-on:click="openCreator">Добавить элемент</button>
+    <button v-on:click="openEditor" v-if="selectedItemExists">Редактировать</button>
+    <button v-on:click="deleteDepartment" v-if="selectedItemExists">Удалить</button>
+    <div v-if="editor">
+      <div>
+        <label for="edit-department-name">Наименование:</label>
+        <input id="edit-department-name" type="text" v-model="editor.name">
+      </div>
+      <div>
+        <label for="edit-department-note">Примечание:</label>
+        <input id="edit-department-note" type="text" v-model="editor.note">
+      </div>
+      <div>
+        <label for="edit-department-parent">Родительский отдел:</label>
+        <select id="edit-department-parent" v-model="editor.parent">
+          <option v-for="department in possibleParents" v-bind:value="department">
+            {{department.name}}
+          </option>
+        </select>
+      </div>
+      <button v-if="editor.status === 'create'" v-on:click="createDepartment">Создать</button>
+      <button v-if="editor.status === 'update'" v-on:click="updateDepartment">Сохранить</button>
+      <button v-on:click="closeEditor">Отмена</button>
+    </div>
+  </div>
+</div>
+<script src="departments.js"></script>
+</body>
+</html>
