@@ -49,6 +49,8 @@ var app = new Vue({
             var id = this.items[this.selectedItemIndex].id;
             this.$http.delete(`/api/employee/${id}`).then(() => {
                 this.refreshItems();
+            }, (response) => {
+                alert(response.body.detail);
             });
         },
         refreshItems: function () {

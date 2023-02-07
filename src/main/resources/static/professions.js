@@ -45,6 +45,8 @@ var app = new Vue({
             var id = this.professions[this.selectedItemIndex].id;
             this.$http.delete(`/api/profession/${id}`).then(() => {
                 this.refreshProfessions();
+            }, (response) => {
+                alert(response.body.detail);
             });
         },
         refreshProfessions: function () {
