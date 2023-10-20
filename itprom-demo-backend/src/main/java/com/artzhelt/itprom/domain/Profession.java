@@ -1,8 +1,14 @@
 package com.artzhelt.itprom.domain;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
+@ToString
+@EqualsAndHashCode
 public class Profession {
 
     @Id
@@ -15,6 +21,12 @@ public class Profession {
     private String note;
 
     public Profession() {
+    }
+
+    public Profession(Long id, String name, String note) {
+        this.id = id;
+        this.name = name;
+        this.note = note;
     }
 
     public Profession(String name, String note) {
