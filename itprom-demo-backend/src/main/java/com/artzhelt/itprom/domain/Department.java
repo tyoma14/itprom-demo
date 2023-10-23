@@ -1,8 +1,10 @@
 package com.artzhelt.itprom.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 public class Department {
 
     @Id
