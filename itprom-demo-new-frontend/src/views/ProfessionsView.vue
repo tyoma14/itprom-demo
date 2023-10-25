@@ -42,23 +42,18 @@
 <script lang="ts">
 
 import {defineComponent} from "vue";
-import axios, {AxiosResponse} from "axios";
+import Profession from "@/model/Profession";
+import store from "@/store";
+import {professionService} from "@/service/ProfessionService";
 
 interface ProfessionsViewData {
-  professions: Profession[],
   editor: ProfessionEditor | null,
   selectedItemIndex: number,
   editorVisible: boolean
 }
 
-interface Profession {
-  id: number | null,
-  name: string,
-  note: string,
-  selected: boolean
-}
-
-interface ProfessionEditor extends Profession {
+interface ProfessionEditor {
+  value: Profession
   status: EditorStatus
 }
 
@@ -67,7 +62,6 @@ type EditorStatus = 'update' | 'create'
 export default defineComponent({
       name: "ProfessionsView",
       data: (): ProfessionsViewData => ({
-        professions: [],
         editor: null,
         selectedItemIndex: -1,
         editorVisible: false
@@ -76,15 +70,12 @@ export default defineComponent({
         openEditor: function () {
           let selectedProfession = this.professions[this.selectedItemIndex];
           this.editor = {
-            id: selectedProfession.id,
-            name: selectedProfession.name,
-            note: selectedProfession.note,
-            selected: false,
+            value: new Profession(selectedProfession),
             status: 'update'
           };
         },
         openCreator: function () {
-          this.editor = {id: null, name:'', note:'', selected: false, status: 'create'};
+          this.editor = {value: new Profession(), status: 'create'};
         },
         closeEditor: function () {
           this.editor = null;
@@ -96,48 +87,51 @@ export default defineComponent({
           this.selectedItemIndex = (evt.currentTarget as HTMLTableRowElement)?.sectionRowIndex;
           this.professions[this.selectedItemIndex].selected = true;
         },
-        fetchProfessions: function (): Promise<AxiosResponse<Profession[]>> {
-          return axios.get('/api/profession');
-        },
         createProfession: function () {
-          axios.post('/api/profession', this.editor).then(() => {
-            this.closeEditor();
-            this.refreshProfessions();
-          });
+          if (this.editor?.value) {
+            professionService.create(this.editor.value).then(() => {
+              this.closeEditor();
+              this.refreshProfessions();
+            });
+          }
         },
         updateProfession: function () {
-          axios.put(`/api/profession/${this.editor?.id}`, this.editor).then(() => {
-            this.closeEditor();
-            this.refreshProfessions();
-          });
+          if (this.editor?.value?.id) {
+            professionService.update(this.editor.value.id, this.editor.value).then(() => {
+              this.closeEditor();
+              this.refreshProfessions();
+            });
+          }
         },
         deleteProfession: function () {
           let id = this.professions[this.selectedItemIndex].id;
-          axios.delete(`/api/profession/${id}`).then(() => {
-            this.refreshProfessions();
-          }, (response) => {
-            alert(response.body.detail);
-          });
+          if (id) {
+            professionService.delete(id).then(() => {
+              this.refreshProfessions();
+            }, (response) => {
+              alert(response.body.detail);
+            });
+          }
         },
         refreshProfessions: function () {
-          this.fetchProfessions().then(response => {
-            if (this.selectedItemIndex >= 0 && response.data.length) {
-              this.selectedItemIndex = this.selectedItemIndex >= response.data.length ?
-                  response.data.length - 1 :
+          professionService.getAll().then(professions => {
+            if (this.selectedItemIndex >= 0 && professions.length) {
+              this.selectedItemIndex = this.selectedItemIndex >= professions.length ?
+                  professions.length - 1 :
                   this.selectedItemIndex;
-              response.data[this.selectedItemIndex].selected = true;
+              professions[this.selectedItemIndex].selected = true;
             }
-            this.professions = response.data;
+            store.dispatch('setProfessions', professions)
           })
         },
         onNameChange(evt: Event) {
           if (this.editor != null) {
-            this.editor.name = (evt.target as HTMLInputElement).value
+            this.editor.value.name = (evt.target as HTMLInputElement).value
           }
         },
         onNoteChange(evt: Event) {
           if (this.editor != null) {
-            this.editor.note = (evt.target as HTMLInputElement).value
+            this.editor.value.note = (evt.target as HTMLInputElement).value
           }
         }
       },
@@ -149,10 +143,13 @@ export default defineComponent({
           return this.editor?.status
         },
         name() {
-          return this.editor?.name
+          return this.editor?.value.name
         },
         note() {
-          return this.editor?.note
+          return this.editor?.value.note
+        },
+        professions(): Profession[] {
+          return store.getters.getProfessions
         }
       },
       created: function () {
