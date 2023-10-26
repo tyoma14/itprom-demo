@@ -11,7 +11,11 @@ export const professionService = {
     async update(id: number, profession: Profession): Promise<Profession> {
         return (await axios.put(`/api/profession/${id}`, profession)).data
     },
-    async delete(id: number): Promise<void> {
-        await axios.delete(`/api/profession/${id}`)
+    async delete(id: number): Promise<void | Error> {
+        try {
+            await axios.delete(`/api/profession/${id}`)
+        } catch (error: any) {
+            throw new Error(error?.response?.data?.detail)
+        }
     }
 }

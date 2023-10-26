@@ -20,21 +20,21 @@
     <div v-else>
       <span>(Пусто)</span>
     </div>
-    <button v-on:click="openCreator">Добавить элемент</button>
-    <button v-on:click="openEditor" v-if="selectedItemExists">Редактировать</button>
-    <button v-on:click="deleteProfession" v-if="selectedItemExists">Удалить</button>
+    <a-button v-on:click="openCreator">Добавить элемент</a-button>
+    <a-button v-on:click="openEditor" v-if="selectedItemExists">Редактировать</a-button>
+    <a-button v-on:click="deleteProfession" v-if="selectedItemExists">Удалить</a-button>
     <div v-if="editor">
       <div>
         <label for="edit-profession-name">Наименование:</label>
-        <input id="edit-profession-name" type="text" :value="name" @input="onNameChange">
+        <input id="edit-profession-name" type="text" :value="name" @input="onNameChange"/>
       </div>
       <div>
         <label for="edit-profession-note">Примечание:</label>
         <input id="edit-profession-note" type="text" :value="note" @input="onNoteChange">
       </div>
-      <button v-if="editorStatus === 'create'" v-on:click="createProfession">Создать</button>
-      <button v-if="editorStatus === 'update'" v-on:click="updateProfession">Сохранить</button>
-      <button v-on:click="closeEditor">Отмена</button>
+      <a-button v-if="editorStatus === 'create'" v-on:click="createProfession">Создать</a-button>
+      <a-button v-if="editorStatus === 'update'" v-on:click="updateProfession">Сохранить</a-button>
+      <a-button v-on:click="closeEditor">Отмена</a-button>
     </div>
   </div>
 </template>
@@ -45,12 +45,6 @@ import {defineComponent} from "vue";
 import Profession from "@/model/Profession";
 import {useDirectoryStore} from "@/store/directory";
 import {professionService} from "@/service/ProfessionService";
-
-interface ProfessionsViewData {
-  editor: ProfessionEditor | null,
-  selectedItemIndex: number,
-  editorVisible: boolean
-}
 
 interface ProfessionEditor {
   value: Profession
@@ -66,8 +60,8 @@ export default defineComponent({
       directoryStore: useDirectoryStore()
     }
   },
-  data: (): ProfessionsViewData => ({
-    editor: null,
+  data: () => ({
+    editor: null as (ProfessionEditor | null),
     selectedItemIndex: -1,
     editorVisible: false
   }),
@@ -113,8 +107,8 @@ export default defineComponent({
       if (id) {
         professionService.delete(id).then(() => {
           this.refreshProfessions();
-        }, (response) => {
-          alert(response.body.detail);
+        }, (error: Error) => {
+          alert(error.message);
         });
       }
     },
