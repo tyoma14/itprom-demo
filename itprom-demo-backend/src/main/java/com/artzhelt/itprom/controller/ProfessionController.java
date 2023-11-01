@@ -1,49 +1,32 @@
 package com.artzhelt.itprom.controller;
 
 import com.artzhelt.itprom.domain.Profession;
-import com.artzhelt.itprom.repo.ProfessionRepository;
-import org.springframework.web.bind.annotation.*;
+import com.artzhelt.itprom.service.ProfessionService;
+import com.artzhelt.itprom.spec.ProfessionByNameSpec;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/profession")
-public class ProfessionController {
+public class ProfessionController extends CrudRestController<Profession> {
 
-    private final ProfessionRepository professionRepository;
+    private final ProfessionService professionService;
 
-    public ProfessionController(ProfessionRepository professionRepository) {
-        this.professionRepository = professionRepository;
+    public ProfessionController(ProfessionService professionService) {
+        super(professionService);
+        this.professionService = professionService;
     }
 
-    @GetMapping
-    public Iterable<Profession> findAll() {
-        return professionRepository.findAll();
+    @PostMapping("/find-by-name")
+    public Profession findByName(@RequestBody ProfessionByNameSpec spec) {
+        return professionService.findOne(spec).orElse(null);
     }
 
-    @PostMapping
-    public Profession create(@RequestBody Profession profession) {
-        return professionRepository.save(profession);
-    }
-
-    @GetMapping("/{id}")
-    public Profession get(@PathVariable Long id) {
-        return professionRepository.findById(id).get();
-    }
-    
-    @PutMapping("/{id}")
-    public Profession update(@RequestBody Profession newProfession, @PathVariable Long id) {
-        return professionRepository.findById(id)
-                .map(oldProfession -> {oldProfession.setName(newProfession.getName());
-                                       oldProfession.setNote(newProfession.getNote());
-                                       return professionRepository.save(oldProfession);}
-                )
-                .orElseGet(() -> {newProfession.setId(id);
-                                  return professionRepository.save(newProfession);}
-                );
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        professionRepository.deleteById(id);
+    @PostMapping("/count-by-name")
+    public Long countByName(@RequestBody ProfessionByNameSpec spec) {
+        return professionService.count(spec);
     }
 
 }

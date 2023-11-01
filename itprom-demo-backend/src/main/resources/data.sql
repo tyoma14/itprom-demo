@@ -1,8 +1,8 @@
-insert into profession (id, name, note) values (2, 'Разработчик', 'Отвечает за разработку ПО');
-insert into profession (id, name, note) values (3, 'QA-инженер', 'Отвечает за качество ПО и процессов его разработки');
-insert into profession (id, name, note) values (4, 'Аналитик', 'Отвечает за анализ требований к ПО и составление ТЗ');
-insert into profession (id, name, note) values (5, 'Системный администратор', 'Отвечает за корректную работу оборудования');
-insert into profession (id, name, note) values (6, 'HR-менеджер', 'Отвечает за развитие персонала компании');
+insert into profession (id, place_id, name, note) values (2, 1, 'Разработчик', 'Отвечает за разработку ПО');
+insert into profession (id, place_id, name, note) values (3, 2, 'QA-инженер', 'Отвечает за качество ПО и процессов его разработки');
+insert into profession (id, place_id, name, note) values (4, null, 'Аналитик', 'Отвечает за анализ требований к ПО и составление ТЗ');
+insert into profession (id, place_id, name, note) values (5, 1, 'Системный администратор', 'Отвечает за корректную работу оборудования');
+insert into profession (id, place_id, name, note) values (6, 2, 'HR-менеджер', 'Отвечает за развитие персонала компании');
 
 insert into department (id, name, note, parent_id) values (2, 'Отдел разработки', 'Занимается разработкой ПО', null);
 insert into department (id, name, note, parent_id) values (3, 'Отдел бэкенд-разработки', 'Занимается разработкой бэкенда', 2);
