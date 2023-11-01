@@ -1,16 +1,14 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/itprom_demo?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-    username: root
+    url: jdbc:postgresql://localhost:5432/itprom_demo
+    username: postgres
     password: tyoma199814
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     open-in-view: true
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
       org:
         hibernate:
           envers:
